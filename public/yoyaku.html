@@ -102,6 +102,24 @@
       background: #74492f;
     }
 
+    /* 送っている間（押せない状態） */
+    .submit:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .submit:disabled:hover {
+      background: #8a5a3c;
+    }
+
+    /* 送れなかったときのメッセージ */
+    .send-error {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #b3261e;
+    }
+
     /* 送信後に出すメッセージ */
     .done {
       text-align: center;
@@ -127,12 +145,6 @@
 
     .done-detail dd + dt {
       margin-top: 8px;
-    }
-
-    .done-note {
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: #8a7767;
     }
 
     .back-link {
@@ -178,7 +190,8 @@
         </select>
       </div>
 
-      <button type="submit" class="submit">予約する</button>
+      <button type="submit" class="submit" id="submit-button">予約する</button>
+      <p class="send-error" id="send-error" role="alert" hidden>送れませんでした。もう一度お試しください。</p>
     </form>
 
     <!-- 送信後に出すメッセージ（最初は隠しておく） -->
@@ -192,15 +205,19 @@
         <dt>人数</dt>
         <dd id="done-people"></dd>
       </dl>
-      <p class="done-note">※今はお試し版のため、予約内容は保存されていません。</p>
     </div>
 
     <a href="index.html" class="back-link">トップページへ戻る</a>
   </main>
 
   <script>
+    // 予約の中身を送る先（Google スプレッドシートにつながっている）
+    const SEND_URL = "https://script.google.com/macros/s/AKfycbxEhuDBguI-cUNSbB6CUhsVegIuY0dyab2_ixOn2QweP4VUgdwROAL6AOtIuXhinzL1/exec";
+
     const form = document.getElementById("reserve-form");
     const done = document.getElementById("done");
+    const submitButton = document.getElementById("submit-button");
+    const sendError = document.getElementById("send-error");
 
     // 「2026-11-20T14:00」を「2026年11月20日 14:00」の形にする
     function formatDatetime(value) {
@@ -209,14 +226,35 @@
       return `${y}年${Number(m)}月${Number(d)}日 ${time}`;
     }
 
-    form.addEventListener("submit", (event) => {
-      // ページの移動を止めて、画面の中だけで完結させる
+    form.addEventListener("submit", async (event) => {
+      // ページの移動を止める
       event.preventDefault();
 
       const name = document.getElementById("name").value;
       const datetime = document.getElementById("datetime").value;
       const people = document.getElementById("people").value;
 
+      // 送っている間は、ボタンを押せないようにする
+      submitButton.disabled = true;
+      submitButton.textContent = "送っています";
+      sendError.hidden = true;
+
+      try {
+        await fetch(SEND_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ name: name, datetime: datetime, people: people })
+        });
+      } catch (error) {
+        // 通信に失敗したとき：入れた中身は消さずに、もう一度押せるようにする
+        sendError.hidden = false;
+        submitButton.disabled = false;
+        submitButton.textContent = "予約する";
+        return;
+      }
+
+      // 送れたとき
       document.getElementById("done-name").textContent = name;
       document.getElementById("done-datetime").textContent = formatDatetime(datetime);
       document.getElementById("done-people").textContent = people + "名";
