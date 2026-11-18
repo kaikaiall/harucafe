@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハルカフェ</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      color: #4a3b32;
+      background: #fbf7f2;
+      line-height: 1.7;
+    }
+
+    /* 1. 店の写真と、ひとこと */
+    .hero {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 16px;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+
+    /* 写真が入る場所（写真ができたら、ここに img を入れる） */
+    .photo-placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #e8ddd1;
+      border: 2px dashed #b9a796;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8a7767;
+      font-size: 0.95rem;
+    }
+
+    .hero-message {
+      margin-top: 24px;
+      font-size: 1.25rem;
+    }
+
+    /* 2. 新メニュー3つ */
+    .menu {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 16px;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+
+    .menu-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .menu-item {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(74, 59, 50, 0.08);
+    }
+
+    /* メニューの写真が入る場所 */
+    .menu-item .photo-placeholder {
+      aspect-ratio: 4 / 3;
+    }
+
+    .menu-name {
+      margin-top: 16px;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .menu-price {
+      margin-top: 4px;
+      font-size: 1rem;
+      color: #8a5a3c;
+    }
+
+    /* 言葉の途中で折り返さず、<wbr> の位置で折り返す */
+    .menu-name,
+    .menu-item .photo-placeholder {
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    /* スマホの幅：3つ横1列のまま、余白と文字を少し小さくする */
+    @media (max-width: 480px) {
+      .menu-list {
+        gap: 8px;
+      }
+
+      .menu-item {
+        padding: 8px;
+      }
+
+      .menu-item .photo-placeholder {
+        font-size: 0.7rem;
+        border-radius: 8px;
+      }
+
+      .menu-name {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .menu-price {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* ご予約ボタン */
+    .reserve-cta {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 16px 56px;
+      text-align: center;
+    }
+
+    .reserve-button {
+      display: inline-block;
+      width: 100%;
+      max-width: 320px;
+      padding: 14px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      color: #ffffff;
+      background: #8a5a3c;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+
+    .reserve-button:hover {
+      background: #74492f;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 店の写真と、ひとこと -->
+  <section class="hero">
+    <h1 class="hero-title">ハルカフェ</h1>
+
+    <div class="photo-placeholder">店の写真が入ります</div>
+
+    <p class="hero-message">ほっと一息、やさしい時間を。</p>
+  </section>
+
+  <!-- 2. 新メニュー3つ -->
+  <section class="menu">
+    <h2 class="section-title">新メニュー</h2>
+
+    <ul class="menu-list">
+      <li class="menu-item">
+        <div class="photo-placeholder">写真が<wbr>入ります</div>
+        <p class="menu-name">ブレンド<wbr>コーヒー</p>
+        <p class="menu-price">450円</p>
+      </li>
+      <li class="menu-item">
+        <div class="photo-placeholder">写真が<wbr>入ります</div>
+        <p class="menu-name">本日の<wbr>ケーキ</p>
+        <p class="menu-price">500円</p>
+      </li>
+      <li class="menu-item">
+        <div class="photo-placeholder">写真が<wbr>入ります</div>
+        <p class="menu-name">ハルカフェ<wbr>特製<wbr>プリン</p>
+        <p class="menu-price">600円</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ご予約 -->
+  <section class="reserve-cta">
+    <a href="yoyaku.html" class="reserve-button">予約する</a>
+  </section>
+
+</body>
+</html>

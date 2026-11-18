@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ご予約 | ハルカフェ</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      color: #4a3b32;
+      background: #fbf7f2;
+      line-height: 1.7;
+    }
+
+    .reserve {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 40px 16px;
+    }
+
+    .shop-name {
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      letter-spacing: 0.1em;
+      text-align: center;
+      margin: 8px 0 24px;
+    }
+
+    /* フォームと完了メッセージを入れる白いカード */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px 16px;
+      box-shadow: 0 2px 8px rgba(74, 59, 50, 0.08);
+    }
+
+    .field + .field {
+      margin-top: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .required {
+      font-size: 0.8rem;
+      font-weight: normal;
+      color: #8a5a3c;
+      margin-left: 6px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem; /* 16px 未満だと iPhone で勝手に拡大されるため */
+      font-family: inherit;
+      color: inherit;
+      background: #fbf7f2;
+      border: 1px solid #d8cabd;
+      border-radius: 8px;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: 2px solid #8a5a3c;
+      outline-offset: 1px;
+      border-color: #8a5a3c;
+    }
+
+    .submit {
+      display: block;
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      color: #ffffff;
+      background: #8a5a3c;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .submit:hover {
+      background: #74492f;
+    }
+
+    /* 送信後に出すメッセージ */
+    .done {
+      text-align: center;
+    }
+
+    .done-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .done-detail {
+      margin-top: 16px;
+      text-align: left;
+      background: #fbf7f2;
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+
+    .done-detail dt {
+      font-size: 0.85rem;
+      color: #8a7767;
+    }
+
+    .done-detail dd + dt {
+      margin-top: 8px;
+    }
+
+    .done-note {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: #8a7767;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 24px;
+      text-align: center;
+      color: #8a5a3c;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="reserve">
+    <p class="shop-name">ハルカフェ</p>
+    <h1 class="section-title">ご予約</h1>
+
+    <!-- 予約フォーム -->
+    <form id="reserve-form" class="card">
+      <div class="field">
+        <label for="name">お名前<span class="required">必須</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="例：春田 花子" required>
+      </div>
+
+      <div class="field">
+        <label for="datetime">希望の日時<span class="required">必須</span></label>
+        <input type="datetime-local" id="datetime" name="datetime" required>
+      </div>
+
+      <div class="field">
+        <label for="people">人数<span class="required">必須</span></label>
+        <select id="people" name="people" required>
+          <option value="">選んでください</option>
+          <option value="1">1名</option>
+          <option value="2">2名</option>
+          <option value="3">3名</option>
+          <option value="4">4名</option>
+          <option value="5">5名</option>
+          <option value="6">6名</option>
+        </select>
+      </div>
+
+      <button type="submit" class="submit">予約する</button>
+    </form>
+
+    <!-- 送信後に出すメッセージ（最初は隠しておく） -->
+    <div id="done" class="card done" hidden>
+      <p class="done-title">予約を受け付けました</p>
+      <dl class="done-detail">
+        <dt>お名前</dt>
+        <dd id="done-name"></dd>
+        <dt>希望の日時</dt>
+        <dd id="done-datetime"></dd>
+        <dt>人数</dt>
+        <dd id="done-people"></dd>
+      </dl>
+      <p class="done-note">※今はお試し版のため、予約内容は保存されていません。</p>
+    </div>
+
+    <a href="index.html" class="back-link">トップページへ戻る</a>
+  </main>
+
+  <script>
+    const form = document.getElementById("reserve-form");
+    const done = document.getElementById("done");
+
+    // 「2026-11-20T14:00」を「2026年11月20日 14:00」の形にする
+    function formatDatetime(value) {
+      const [date, time] = value.split("T");
+      const [y, m, d] = date.split("-");
+      return `${y}年${Number(m)}月${Number(d)}日 ${time}`;
+    }
+
+    form.addEventListener("submit", (event) => {
+      // ページの移動を止めて、画面の中だけで完結させる
+      event.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const datetime = document.getElementById("datetime").value;
+      const people = document.getElementById("people").value;
+
+      document.getElementById("done-name").textContent = name;
+      document.getElementById("done-datetime").textContent = formatDatetime(datetime);
+      document.getElementById("done-people").textContent = people + "名";
+
+      form.hidden = true;
+      done.hidden = false;
+    });
+  </script>
+
+</body>
+</html>
